@@ -145,16 +145,15 @@ class GeetestCrack(object):
 
         list = []
 
-        for j in range(3):
+        for j in range(4):
             list.append(1)
 
-        length -= 3
-        x = random.randint(1, 3)
+        length -= 4
+        x = random.randint(1, 4)
         while length - x > 5:
             list.append(x)
             length -= x
             x = random.randint(1, 3)
-
         for i in range(x):
             list.append(1)
 
@@ -187,7 +186,7 @@ class GeetestCrack(object):
             random_y = random.randint(0, 1)
             track_string = track_string + "{%d, %d}," % (track, y - 472 + random_y)
             ActionChains(self.driver).move_to_element_with_offset(to_element = drag_elem, xoffset = track + 22, yoffset = y + random_y- 472).perform()
-            time.sleep(random.randint(1, 20)/400)
+            time.sleep(random.randint(1, 10)/500)
         print(track_string)
         ActionChains(self.driver).move_to_element_with_offset(to_element = drag_elem, xoffset = 21, yoffset = y - 472).perform()
         time.sleep(0.1)
@@ -210,10 +209,12 @@ class Cracker(GeetestCrack):
     def __init__(self, driver):
         super(Cracker, self).__init__(driver)
 
-    def crack(self):
+    def input_and_click(self):
         self.input_by_id()
         self.click_by_id()
         time.sleep(3.5)
+
+    def crack(self):
         WebDriverWait(self.driver, 30).until(lambda the_driver: the_driver.find_element_by_class_name('gt_cut_bg_slice')).is_displayed()
         image1 = self.get_image('gt_cut_bg_slice')
         image2 = self.get_image('gt_cut_fullbg_slice')
@@ -224,10 +225,16 @@ class Cracker(GeetestCrack):
 
 def main():
     driver = webdriver.Chrome('/Users/orange/Downloads/chromedriver')
-    driver.get('http://www.gsxt.gov.cn/index.html')
+    url = 'http://www.gsxt.gov.cn/index.html'
+    driver.get(url)
     cracker = Cracker(driver)
+    cracker.input_and_click()
     cracker.crack()
-    print(driver.get_window_size())
+    current_url = driver.current_url
+    while current_url == url:
+        cracker.crack()
+        current_url = driver.current_url
     time.sleep(3)
+
 if __name__ == "__main__":
     main()
